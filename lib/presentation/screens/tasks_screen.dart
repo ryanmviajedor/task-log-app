@@ -132,7 +132,10 @@ class _TasksScreenState extends State<TasksScreen>
         body: TabBarView(
           controller: _tabController,
           children: [
-            const DashboardScreen(),
+            DashboardScreen(
+              onNavigateToCalendar: () => _tabController.animateTo(1),
+              onNavigateToTasks: () => _tabController.animateTo(2),
+            ),
             _buildCalendarView(),
             _buildTaskListView(),
           ],

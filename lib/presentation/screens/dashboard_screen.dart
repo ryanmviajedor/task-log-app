@@ -8,7 +8,14 @@ import '../../core/theme/app_colors.dart';
 import '../../domain/entities/task_status.dart';
 
 class DashboardScreen extends StatelessWidget {
-  const DashboardScreen({super.key});
+  final VoidCallback? onNavigateToCalendar;
+  final VoidCallback? onNavigateToTasks;
+
+  const DashboardScreen({
+    super.key,
+    this.onNavigateToCalendar,
+    this.onNavigateToTasks,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -160,14 +167,14 @@ class DashboardScreen extends StatelessWidget {
                                   value: taskProvider.totalTasks,
                                   icon: Icons.assignment,
                                   color: AppColors.primary1,
-                                  onTap: () => _showAllTasks(context),
+                                  onTap: onNavigateToTasks,
                                 ),
                                 DashboardStatCard(
                                   title: 'Tasks Due',
                                   value: taskProvider.tasksDue,
                                   icon: Icons.schedule,
                                   color: Colors.orange,
-                                  onTap: () => _showDueTasks(context),
+                                  onTap: onNavigateToTasks,
                                 ),
                                 DashboardStatCard(
                                   title: 'Completed',
@@ -263,7 +270,7 @@ class DashboardScreen extends StatelessWidget {
                           size: 18,
                         ),
                         gradient: AppColors.accentGradient,
-                        onPressed: () => _navigateToCalendar(context),
+                        onPressed: onNavigateToCalendar,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 16,
                           vertical: 12,
@@ -302,7 +309,7 @@ class DashboardScreen extends StatelessWidget {
                           size: 18,
                         ),
                         gradient: AppColors.accentGradient,
-                        onPressed: () => _navigateToCalendar(context),
+                        onPressed: onNavigateToCalendar,
                         padding: const EdgeInsets.symmetric(
                           horizontal: 12,
                           vertical: 12,
@@ -436,17 +443,5 @@ class DashboardScreen extends StatelessWidget {
   void _showTasksFilter(BuildContext context, TaskStatus status) {
     // Navigate to tasks screen with filter
     DefaultTabController.of(context).animateTo(2);
-  }
-
-  void _showAllTasks(BuildContext context) {
-    DefaultTabController.of(context).animateTo(2);
-  }
-
-  void _showDueTasks(BuildContext context) {
-    DefaultTabController.of(context).animateTo(2);
-  }
-
-  void _navigateToCalendar(BuildContext context) {
-    DefaultTabController.of(context).animateTo(1);
   }
 }
