@@ -52,6 +52,17 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
   Future<void> _saveTask() async {
     if (!_formKey.currentState!.validate()) return;
 
+    // Additional validation for dates
+    if (_endDate.isBefore(_startDate)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('End date cannot be before start date'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isLoading = true);
 
     try {
@@ -69,6 +80,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           priority: _priority,
           status: _status,
         );
+
+        // Task created successfully
         await provider.addTask(newTask);
       } else {
         // Update existing task
@@ -80,6 +93,8 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
           priority: _priority,
           status: _status,
         );
+
+        // Task updated successfully
         await provider.editTask(updatedTask);
       }
 
@@ -87,11 +102,15 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
         Navigator.of(context).pop();
       }
     } catch (e) {
+      // Log error for debugging (in production, use proper logging)
+      debugPrint('Error saving task: $e');
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error saving task: $e'),
+            content: Text('Error saving task: ${e.toString()}'),
             backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
           ),
         );
       }
@@ -112,9 +131,9 @@ class _AddEditTaskScreenState extends State<AddEditTaskScreen> {
     if (picked != null && picked != _startDate) {
       setState(() {
         _startDate = picked;
-        // Ensure end date is not before start date
+        // Ensure end date is not before start date (allow same date)
         if (_endDate.isBefore(_startDate)) {
-          _endDate = _startDate.add(const Duration(days: 1));
+          _endDate = _startDate;
         }
       });
     }

@@ -14,6 +14,7 @@ import 'domain/usecases/delete_task.dart';
 import 'domain/usecases/get_tasks.dart';
 import 'domain/usecases/update_task.dart';
 import 'presentation/providers/task_provider.dart';
+import 'presentation/providers/theme_provider.dart';
 import 'presentation/screens/add_edit_task_screen.dart';
 import 'presentation/screens/tasks_screen.dart';
 
@@ -26,6 +27,10 @@ void main() async {
   // Initialize notifications
   await NotificationService().initialize();
 
+  // Initialize theme provider
+  final themeProvider = ThemeProvider();
+  await themeProvider.initialize();
+
   final taskBox = Hive.box<TaskModel>('tasks');
   final taskLocalDataSource = TaskLocalDataSourceImpl(taskBox: taskBox);
   final taskRepository = TaskRepositoryImpl(
@@ -35,6 +40,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider(
           create: (_) => TaskProvider(
             getTasks: GetTasks(taskRepository),
@@ -54,55 +60,119 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Task Log',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: AppColors.primary1,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.grey[50],
-        cardTheme: CardThemeData(
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, child) {
+        return MaterialApp(
+          title: 'Task Log',
+          debugShowCheckedModeBanner: false, // Remove debug banner
+          theme: _buildLightTheme(),
+          darkTheme: _buildDarkTheme(),
+          themeMode: themeProvider.themeMode,
+          home: const TasksScreen(),
+          routes: {'/add': (_) => const AddEditTaskScreen()},
+        );
+      },
+    );
+  }
+
+  ThemeData _buildLightTheme() {
+    return ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary1,
+        brightness: Brightness.light,
+      ),
+      useMaterial3: true,
+      scaffoldBackgroundColor: Colors.grey[50],
+      cardTheme: CardThemeData(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
           elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-          ),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: AppColors.primary1.withValues(alpha: 0.3),
-            ),
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: AppColors.primary1.withValues(alpha: 0.3),
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(color: AppColors.primary1, width: 2),
-          ),
-          filled: true,
-          fillColor: Colors.white,
         ),
       ),
-      home: Container(
-        decoration: const BoxDecoration(gradient: AppColors.backgroundGradient),
-        child: const TasksScreen(),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppColors.primary1.withValues(alpha: 0.3),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppColors.primary1.withValues(alpha: 0.3),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColors.primary1, width: 2),
+        ),
+        filled: true,
+        fillColor: Colors.white,
       ),
-      routes: {'/add': (_) => const AddEditTaskScreen()},
+      appBarTheme: const AppBarTheme(
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(fontSize: 20, fontWeight: FontWeight.w600),
+      ),
+    );
+  }
+
+  ThemeData _buildDarkTheme() {
+    return ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: AppColors.primary1,
+        brightness: Brightness.dark,
+      ),
+      useMaterial3: true,
+      scaffoldBackgroundColor: const Color(0xFF121212),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        color: const Color(0xFF1E1E1E),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppColors.primary1.withValues(alpha: 0.5),
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(
+            color: AppColors.primary1.withValues(alpha: 0.5),
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: AppColors.primary1, width: 2),
+        ),
+        filled: true,
+        fillColor: const Color(0xFF2A2A2A),
+      ),
+      appBarTheme: const AppBarTheme(
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }

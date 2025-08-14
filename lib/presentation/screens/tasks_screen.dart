@@ -56,96 +56,108 @@ class _TasksScreenState extends State<TasksScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: GradientAppBar(
-        title: 'Task Log',
-        gradient: AppColors.primaryGradient,
-        bottom: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.white,
-          labelColor: Colors.white,
-          unselectedLabelColor: Colors.white70,
-          tabs: const [
-            Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
-            Tab(icon: Icon(Icons.calendar_today), text: 'Calendar'),
-            Tab(icon: Icon(Icons.list), text: 'Tasks'),
-          ],
-        ),
-        actions: [
-          // Filter button for tasks tab
-          if (_tabController.index == 2)
-            Container(
-              margin: const EdgeInsets.only(right: 8),
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: PopupMenuButton<TaskStatus?>(
-                icon: Icon(
-                  Icons.filter_list,
-                  color: _statusFilter != null ? Colors.white : Colors.white70,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: isDark
+            ? AppColors.darkBackgroundGradient
+            : AppColors.backgroundGradient,
+      ),
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: GradientAppBar(
+          title: 'Task Log',
+          gradient: AppColors.primaryGradient,
+          bottom: TabBar(
+            controller: _tabController,
+            indicatorColor: Colors.white,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white70,
+            tabs: const [
+              Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
+              Tab(icon: Icon(Icons.calendar_today), text: 'Calendar'),
+              Tab(icon: Icon(Icons.list), text: 'Tasks'),
+            ],
+          ),
+          actions: [
+            // Filter button for tasks tab
+            if (_tabController.index == 2)
+              Container(
+                margin: const EdgeInsets.only(right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(8),
                 ),
-                onSelected: (status) {
-                  setState(() {
-                    _statusFilter = status;
-                  });
-                },
-                itemBuilder: (context) => [
-                  const PopupMenuItem(
-                    value: null,
-                    child: Row(
-                      children: [
-                        Icon(Icons.clear_all),
-                        SizedBox(width: 8),
-                        Text('All Tasks'),
-                      ],
-                    ),
+                child: PopupMenuButton<TaskStatus?>(
+                  icon: Icon(
+                    Icons.filter_list,
+                    color: _statusFilter != null
+                        ? Colors.white
+                        : Colors.white70,
                   ),
-                  ...TaskStatus.values.map(
-                    (status) => PopupMenuItem(
-                      value: status,
+                  onSelected: (status) {
+                    setState(() {
+                      _statusFilter = status;
+                    });
+                  },
+                  itemBuilder: (context) => [
+                    const PopupMenuItem(
+                      value: null,
                       child: Row(
                         children: [
-                          Icon(status.icon, color: status.color, size: 20),
-                          const SizedBox(width: 8),
-                          Text(status.displayName),
+                          Icon(Icons.clear_all),
+                          SizedBox(width: 8),
+                          Text('All Tasks'),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    ...TaskStatus.values.map(
+                      (status) => PopupMenuItem(
+                        value: status,
+                        child: Row(
+                          children: [
+                            Icon(status.icon, color: status.color, size: 20),
+                            const SizedBox(width: 8),
+                            Text(status.displayName),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ),
-        ],
-      ),
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          const DashboardScreen(),
-          _buildCalendarView(),
-          _buildTaskListView(),
-        ],
-      ),
-      floatingActionButton: Container(
-        decoration: BoxDecoration(
-          gradient: AppColors.primaryGradient,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary1.withValues(alpha: 0.3),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
           ],
         ),
-        child: FloatingActionButton(
-          onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const AddEditTaskScreen()),
+        body: TabBarView(
+          controller: _tabController,
+          children: [
+            const DashboardScreen(),
+            _buildCalendarView(),
+            _buildTaskListView(),
+          ],
+        ),
+        floatingActionButton: Container(
+          decoration: BoxDecoration(
+            gradient: AppColors.primaryGradient,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.primary1.withValues(alpha: 0.3),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          child: const Icon(Icons.add, color: Colors.white),
+          child: FloatingActionButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const AddEditTaskScreen()),
+            ),
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: const Icon(Icons.add, color: Colors.white),
+          ),
         ),
       ),
     );

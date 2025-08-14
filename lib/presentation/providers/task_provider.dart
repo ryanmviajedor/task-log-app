@@ -75,8 +75,13 @@ class TaskProvider with ChangeNotifier {
     await createTask(task);
     await fetchTasks();
 
-    // Schedule notifications for the new task
-    await _notificationService.scheduleTaskReminder(task);
+    // Schedule notifications for the new task (with error handling)
+    try {
+      await _notificationService.scheduleTaskReminder(task);
+    } catch (e) {
+      print('Warning: Could not schedule notification for task: $e');
+      // Don't fail the task creation if notification scheduling fails
+    }
   }
 
   Future<void> editTask(Task task) async {
@@ -148,6 +153,19 @@ class TaskProvider with ChangeNotifier {
       final updatedTask = task.copyWith(status: status);
       await updateTask(updatedTask);
       await fetchTasks();
+    }
+  }
+
+  // Debug method to clear all tasks (useful for testing)
+  Future<void> clearAllTasks() async {
+    try {
+      final taskIds = _tasks.map((task) => task.id).toList();
+      for (final id in taskIds) {
+        await deleteTask(id);
+      }
+      await fetchTasks();
+    } catch (e) {
+      debugPrint('Error clearing tasks: $e');
     }
   }
 }

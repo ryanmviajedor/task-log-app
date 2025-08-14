@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../core/theme/app_colors.dart';
+import '../providers/theme_provider.dart';
 
 class GradientContainer extends StatelessWidget {
   final Widget child;
@@ -176,6 +178,7 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
   final Widget? leading;
   final PreferredSizeWidget? bottom;
   final LinearGradient? gradient;
+  final bool showThemeToggle;
 
   const GradientAppBar({
     super.key,
@@ -184,6 +187,7 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.leading,
     this.bottom,
     this.gradient,
+    this.showThemeToggle = true,
   });
 
   @override
@@ -201,7 +205,20 @@ class GradientAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
         leading: leading,
-        actions: actions,
+        actions: [
+          if (showThemeToggle) ...[
+            Consumer<ThemeProvider>(
+              builder: (context, themeProvider, child) {
+                return IconButton(
+                  icon: Icon(themeProvider.themeIcon, color: Colors.white),
+                  onPressed: () => themeProvider.toggleTheme(),
+                  tooltip: themeProvider.themeLabel,
+                );
+              },
+            ),
+          ],
+          if (actions != null) ...actions!,
+        ],
         bottom: bottom,
         backgroundColor: Colors.transparent,
         elevation: 0,

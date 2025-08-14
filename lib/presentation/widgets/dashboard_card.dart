@@ -116,18 +116,25 @@ class DashboardStatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.1),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : color.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
         ],
-        border: Border.all(color: color.withValues(alpha: 0.2), width: 1),
+        border: Border.all(
+          color: color.withValues(alpha: isDark ? 0.4 : 0.2),
+          width: 1,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -179,7 +186,7 @@ class DashboardStatCard extends StatelessWidget {
                   child: Text(
                     title,
                     style: TextStyle(
-                      color: Colors.grey[600],
+                      color: isDark ? Colors.grey[400] : Colors.grey[600],
                       fontSize: 10,
                       fontWeight: FontWeight.w500,
                     ),

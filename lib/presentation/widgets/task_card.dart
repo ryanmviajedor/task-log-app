@@ -18,19 +18,34 @@ class TaskCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        gradient: AppColors.lightCardGradient,
+        gradient: isDark
+            ? LinearGradient(
+                colors: [
+                  const Color(0xFF2A2A2A).withValues(alpha: 0.8),
+                  const Color(0xFF1E1E1E).withValues(alpha: 0.8),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              )
+            : AppColors.lightCardGradient,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary1.withValues(alpha: 0.1),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.3)
+                : AppColors.primary1.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
           BoxShadow(
-            color: AppColors.primary2.withValues(alpha: 0.05),
+            color: isDark
+                ? Colors.black.withValues(alpha: 0.2)
+                : AppColors.primary2.withValues(alpha: 0.05),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -63,7 +78,7 @@ class TaskCard extends StatelessWidget {
                         task.title,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           fontWeight: FontWeight.bold,
-                          color: AppColors.primary1,
+                          color: isDark ? Colors.white : AppColors.primary1,
                           decoration: task.isCompleted
                               ? TextDecoration.lineThrough
                               : null,
@@ -118,7 +133,7 @@ class TaskCard extends StatelessWidget {
                 Text(
                   task.description,
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: AppColors.darkGrey,
+                    color: isDark ? Colors.grey[300] : AppColors.darkGrey,
                     height: 1.4,
                   ),
                   maxLines: 2,

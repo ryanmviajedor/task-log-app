@@ -10,7 +10,8 @@ class NotificationService {
   factory NotificationService() => _instance;
   NotificationService._internal();
 
-  final FlutterLocalNotificationsPlugin _notifications = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notifications =
+      FlutterLocalNotificationsPlugin();
   bool _isInitialized = false;
 
   Future<void> initialize() async {
@@ -20,14 +21,16 @@ class NotificationService {
     tz.initializeTimeZones();
 
     // Android initialization
-    const AndroidInitializationSettings androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings androidSettings =
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS initialization
-    const DarwinInitializationSettings iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+    const DarwinInitializationSettings iosSettings =
+        DarwinInitializationSettings(
+          requestAlertPermission: true,
+          requestBadgePermission: true,
+          requestSoundPermission: true,
+        );
 
     const InitializationSettings initSettings = InitializationSettings(
       android: androidSettings,
@@ -47,7 +50,7 @@ class NotificationService {
   Future<void> _requestPermissions() async {
     if (defaultTargetPlatform == TargetPlatform.android) {
       await Permission.notification.request();
-      
+
       // For Android 13+ (API level 33+)
       if (await Permission.notification.isDenied) {
         await Permission.notification.request();
@@ -61,43 +64,52 @@ class NotificationService {
   }
 
   Future<void> scheduleTaskReminder(Task task) async {
-    if (!_isInitialized) await initialize();
+    try {
+      if (!_isInitialized) await initialize();
 
-    // Schedule notification for tasks due today
-    if (task.isDueToday && !task.isCompleted) {
-      await _scheduleNotification(
-        id: task.id.hashCode,
-        title: 'Task Due Today!',
-        body: '${task.title} is due today. Don\'t forget to complete it!',
-        scheduledDate: _getNotificationTime(task),
-        payload: task.id,
-      );
-    }
+      // Schedule notification for tasks due today
+      if (task.isDueToday && !task.isCompleted) {
+        final notificationTime = _getNotificationTime(task);
+        await _scheduleNotification(
+          id: task.id.hashCode,
+          title: 'Task Due Today!',
+          body: '${task.title} is due today. Don\'t forget to complete it!',
+          scheduledDate: notificationTime,
+          payload: task.id,
+        );
+      }
 
-    // Schedule notification for overdue tasks
-    if (task.isOverdue) {
-      await _scheduleNotification(
-        id: task.id.hashCode + 1000,
-        title: 'Overdue Task!',
-        body: '${task.title} is overdue. Please complete it as soon as possible.',
-        scheduledDate: DateTime.now().add(const Duration(minutes: 1)),
-        payload: task.id,
-      );
+      // Schedule notification for overdue tasks
+      if (task.isOverdue) {
+        await _scheduleNotification(
+          id: task.id.hashCode + 1000,
+          title: 'Overdue Task!',
+          body:
+              '${task.title} is overdue. Please complete it as soon as possible.',
+          scheduledDate: DateTime.now().add(const Duration(minutes: 1)),
+          payload: task.id,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error scheduling task reminder: $e');
+      // Don't rethrow - notification scheduling should not fail task creation
     }
   }
 
   DateTime _getNotificationTime(Task task) {
     final now = DateTime.now();
     final endDate = task.endDate;
-    
+
     // If task ends today, notify 2 hours before end time
     if (task.isDueToday) {
       final notificationTime = endDate.subtract(const Duration(hours: 2));
       if (notificationTime.isAfter(now)) {
         return notificationTime;
       }
+      // If 2 hours before is in the past, notify in 30 minutes
+      return now.add(const Duration(minutes: 30));
     }
-    
+
     // Default: notify in 1 hour
     return now.add(const Duration(hours: 1));
   }
@@ -109,14 +121,15 @@ class NotificationService {
     required DateTime scheduledDate,
     String? payload,
   }) async {
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'task_reminders',
-      'Task Reminders',
-      channelDescription: 'Notifications for task reminders and due dates',
-      importance: Importance.high,
-      priority: Priority.high,
-      showWhen: true,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'task_reminders',
+          'Task Reminders',
+          channelDescription: 'Notifications for task reminders and due dates',
+          importance: Importance.high,
+          priority: Priority.high,
+          showWhen: true,
+        );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -137,7 +150,8 @@ class NotificationService {
       notificationDetails,
       payload: payload,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
     );
   }
 
@@ -153,13 +167,14 @@ class NotificationService {
   }) async {
     if (!_isInitialized) await initialize();
 
-    const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-      'instant_notifications',
-      'Instant Notifications',
-      channelDescription: 'Instant notifications for task updates',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'instant_notifications',
+          'Instant Notifications',
+          channelDescription: 'Instant notifications for task updates',
+          importance: Importance.high,
+          priority: Priority.high,
+        );
 
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails(
       presentAlert: true,
@@ -187,7 +202,7 @@ class NotificationService {
     // Schedule daily reminder at 9 AM
     final now = DateTime.now();
     var scheduledDate = DateTime(now.year, now.month, now.day, 9, 0);
-    
+
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
