@@ -1,4 +1,4 @@
-# 📱 Task Log App
+# 🐝 HiveFlow
 
 A beautiful and feature-rich Flutter task management application with timer functionality, local notifications, and comprehensive analytics dashboard.
 
@@ -209,6 +209,12 @@ lib/
 
 ## 🆕 Recent Updates
 
+### v2.1.0 - HiveFlow Rebrand
+- 🐝 **New Brand Identity**: Renamed to HiveFlow with updated app identity
+- 📱 **Updated App Names**: Consistent branding across all platforms
+- 🎨 **Enhanced Theme Colors**: Updated theme colors to match HiveFlow branding
+- 📚 **Documentation Updates**: Updated README and descriptions
+
 ### v2.0.0 - Production Ready with Theme System
 - 🌙 **Complete Light/Dark Theme System**: Toggle between light, dark, and system themes
 - 🚀 **Production Ready**: Removed debug banners, improved error handling
@@ -265,4 +271,4 @@ If you find this project helpful, please consider:
 
 ---
 
-**Made with ❤️ using Flutter** | **Production-Ready Task Management** | **Open Source**
+**Made with ❤️ using Flutter** | **HiveFlow - Production-Ready Task Management** | **Open Source**

@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeProvider>(
       builder: (context, themeProvider, child) {
         return MaterialApp(
-          title: 'Task Log',
+          title: 'HiveFlow',
           debugShowCheckedModeBanner: false, // Remove debug banner
           theme: _buildLightTheme(),
           darkTheme: _buildDarkTheme(),

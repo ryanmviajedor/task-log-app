@@ -67,7 +67,7 @@ class _TasksScreenState extends State<TasksScreen>
       child: Scaffold(
         backgroundColor: Colors.transparent,
         appBar: GradientAppBar(
-          title: 'Task Log',
+          title: 'HiveFlow',
           gradient: AppColors.primaryGradient,
           bottom: TabBar(
             controller: _tabController,
